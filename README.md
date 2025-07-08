@@ -1,8 +1,10 @@
 # 🚀 Futuristic Calculator
 
 <p align="center">
-  <img src="https://github.com/m1n1v1rus/futuristic-calculator/blob/main/banner.png?raw=true" alt="Futuristic Calculator Banner" width="100%" />
+  <img src="https://raw.githubusercontent.com/m1n1v1rus/futuristic-calculator/main/assets/banner.png" alt="Futuristic Calculator Banner" width="100%" />
 </p>
+
+
 
 <p align="center">
   <img src="https://img.shields.io/github/stars/m1n1v1rus/futuristic-calculator?style=social" />
