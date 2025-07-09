@@ -1,113 +1,110 @@
-# 🚀 Futuristic Calculator
-
 <p align="center">
   <img src="https://raw.githubusercontent.com/m1n1v1rus/futuristic-calculator/main/assets/banner.png" alt="Futuristic Calculator Banner" width="100%" />
 </p>
 
+# Futuristic Engineering Calculator 🧠
 
-
-<p align="center">
-  <img src="https://img.shields.io/github/stars/m1n1v1rus/futuristic-calculator?style=social" />
-  <img src="https://img.shields.io/github/forks/m1n1v1rus/futuristic-calculator?style=social" />
-  <img src="https://img.shields.io/github/license/m1n1v1rus/futuristic-calculator" />
-  <img src="https://img.shields.io/github/issues/m1n1v1rus/futuristic-calculator" />
-  <img src="https://img.shields.io/github/contributors/m1n1v1rus/futuristic-calculator" />
-</p>
+A modern, multi-functional calculator built with **PyQt5**, combining scientific calculations, voice interaction, graph plotting, unit conversions, keyboard shortcuts, and a dynamic UI inspired by real calculators and engineering tools.
 
 ---
 
-## 💡 About the Project
+## 🚀 Features
 
-**Futuristic Calculator** is not just a calculator. It’s an all-in-one advanced mathematical engine built for engineers, students, scientists, and everyday users who want more from their calculator.
+### 🧮 Scientific Calculator
+- Handles basic and complex expressions
+- Supports `sin`, `cos`, `tan`, `log`, `ln`, `√`, `π`, `e`, factorial, power, etc.
+- Bracket auto-completion
+- Error handling and expression validation
+- Supports **keyboard input** and **shortcut keys**
 
-It includes:
-- 🧠 Instant evaluation of complex expressions
-- 📊 Real-time **graph plotting** (2D & 3D)
-- 🌡️ **Unit conversions** (temperature, length, etc.)
-- 🎤 **Voice input** using speech recognition
-- 🌙 Light/Dark mode toggle
-- 📚 Scientific calculator features (log, trig, sqrt, factorial, etc.)
+### 📢 Voice Command Mode
+- Real-time speech recognition for hands-free calculation
+- Commands like:
+  - "Graph mode"
+  - "Unit converter"
+  - "Dark mode"
+  - "sin x plus 2 into x" → 🧠 gets parsed and evaluated
 
-Designed with a modern UI and voice-activated intelligence, it sets a new benchmark for what a calculator can be.
+### 📈 Graph Plotting (2D & 3D)
+- Enter expressions like `x**2`, `sin(x)`, or `x**2 + y**2`
+- Toggle between 2D/3D mode automatically
+- Features:
+  - Color picker for each expression
+  - Zoom/pan toolbar
+  - Export graph as image
+  - Animate variable (`a`) using a slider
+
+### 🔁 Unit Converter
+- Supports length, temperature, volume, mass, and more
+- Converts between metric and imperial units
+- Clean interface with instant updates
+
+### 🌙 Theme Support
+- Toggle between **Dark** and **Light** mode
+- Full theming for calculator, graph, and converter views
+
+### ⌨️ Keyboard Shortcuts
+| Shortcut     | Action                  |
+|--------------|--------------------------|
+| `Ctrl + G`   | Open Graph Plotter       |
+| `Ctrl + U`   | Open Unit Converter      |
+| `Ctrl + D`   | Toggle Dark/Light Theme  |
+| `Enter`      | Evaluate Expression      |
+| `Esc`        | Clear Expression         |
 
 ---
 
-## 🧩 Features
-
-| Feature                | Description |
-|------------------------|-------------|
-| 💬 Voice Input          | Perform calculations or open modules with your voice |
-| 🧪 Scientific Calculator| Trig, log, ln, power, factorial, root, and more |
-| 📈 Graph Plotting       | Plot multiple curves and view in 2D/3D |
-| 🔄 Unit Converter       | Convert between different units like °C to °F, cm to inch, etc. |
-| 🎨 Dark/Light Themes    | Switch between modes for better visibility |
-| 🖱️ UI Buttons Animation | Interactive and visually responsive UI |
+## 📦 Tech Stack
+- **Python 3.10+**
+- **PyQt5** - UI framework
+- **SymPy** - Expression parsing
+- **Matplotlib** - Graph plotting
+- **NumPy** - Array and math functions
+- **SpeechRecognition** - Voice input
 
 ---
 
-## 🛠️ How It Works
+## 📸 Screenshots
+> ## 📸 Screenshots
 
-### ▶️ Launching the App
-Run it via Python:
+### 🧮 Scientific Calculator
+<img src="https://raw.githubusercontent.com/m1n1v1rus/futuristic-calculator/main/assets/screenshots/calculator.png" width="700"/>
+
+### 📈 Graph Plotter
+<img src="https://raw.githubusercontent.com/m1n1v1rus/futuristic-calculator/main/assets/screenshots/graph_plotter.png" width="700"/>
+
+### 🔁 Unit Converter
+<img src="https://raw.githubusercontent.com/m1n1v1rus/futuristic-calculator/main/assets/screenshots/unit_converter.png" width="700"/>
+
+
+---
+
+## 🛠️ Setup Instructions
+
 ```bash
+# 1. Clone the repo
+https://github.com/m1n1v1rus/futuristic-calculator.git
+
+# 2. Move into project
+cd futuristic-calculator
+
+# 3. Create virtual environment (optional)
+python -m venv .venv
+source .venv/Scripts/activate  # Windows
+
+# 4. Install dependencies
+pip install -r requirements.txt
+
+# 5. Run the calculator
 python main.py
 ```
 
-### 🎤 Voice Commands Supported
-- "Switch to graph"
-- "Switch to unit converter"
-- "Show scientific mode"
-- "Switch to dark mode"
-- "Calculate 25 divided by 5 plus log 100"
-- "Stop voice"
+---
 
-### 📉 Graph Module
-- Plot multiple expressions like: `sin(x)`, `cos(x*2)`
-- Color picker, zoom, pan, export
-
-### 🔁 Unit Converter
-- Convert values like: `100 cm to inches`, `37 C to F`
+## 👤 Author
+**Ayush Mani**  
+🔗 [GitHub: @m1n1v1rus](https://github.com/m1n1v1rus)
 
 ---
 
-## 🔧 Technologies Used
-- `PyQt5` – GUI Framework
-- `matplotlib` & `numpy` – Graph plotting
-- `speech_recognition` – Voice input
-- `math` module – Scientific calculations
-
----
-
-## 📂 Project Structure
-```
-├── main.py
-├── logic/
-│   └── solver.py
-├── ui/
-│   ├── main_window.py
-│   ├── tab_controller.py
-│   ├── graph_view.py
-│   ├── unit_converter.py
-│   └── themes.py
-├── requirements.txt
-└── README.md
-```
-
----
-
-## 🤝 Contributing
-We welcome contributions! Please read our [CONTRIBUTING.md](CONTRIBUTING.md) file. All code contributions must credit `@m1n1v1rus` and follow the CODEOWNERS rules.
-
----
-
-## 📜 License
-This project is licensed under the [MIT License](LICENSE) — feel free to use, modify, and share it with proper credit.
-
----
-
-## 📫 Contact
-For suggestions, issues, or collaborations, please open an issue or contact `@m1n1v1rus` on GitHub.
-
----
-
-> Made with ❤️ and Python by Ayush ([@m1n1v1rus](https://github.com/m1n1v1rus))
+## 🌟 Star the repo if you like futuristic tools!
