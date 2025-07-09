@@ -1,19 +1,19 @@
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QPushButton,
-    QLineEdit, QLabel, QGridLayout
+    QLineEdit, QLabel, QGridLayout, QShortcut
 )
 from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtGui import QIcon, QFont
+from PyQt5.QtGui import QIcon, QFont, QKeySequence
 from ui.themes import dark_theme, light_theme
 from logic.solver import evaluate_expression
 import math
 import speech_recognition as sr
-from ui.graph_view import GraphView  # Updated path
-from ui.unit_converter import UnitConverterView  # Updated path
+from ui.graph_view import GraphView
+from ui.unit_converter import UnitConverterView
 
 
 class CalculatorWindow(QWidget):
-    def __init__(self):
+    def __init__(self, input_field=None):
         super().__init__()
         self.setWindowTitle("Advanced Calculator")
         self.setGeometry(100, 100, 400, 640)
@@ -22,7 +22,9 @@ class CalculatorWindow(QWidget):
         self.buttons = {}
         self.scientific_visible = False
         self.voice_mode_active = False
+        self.external_input = input_field
         self.init_ui()
+        self.setup_shortcuts()
 
     def init_ui(self):
         self.layout = QVBoxLayout()
@@ -60,7 +62,8 @@ class CalculatorWindow(QWidget):
 
         scientific_buttons = [
             ('sin', 0, 0), ('cos', 0, 1), ('tan', 0, 2), ('log', 0, 3),
-            ('ln', 1, 0),  ('√', 1, 1),  ('^', 1, 2),   ('!', 1, 3)
+            ('ln', 1, 0),  ('√', 1, 1),  ('^', 1, 2),   ('!', 1, 3),
+            ('π', 2, 0),  ('e', 2, 1)
         ]
         for text, row, col in scientific_buttons:
             button = self.create_button(text, row, col, is_scientific=True)
@@ -85,59 +88,48 @@ class CalculatorWindow(QWidget):
 
         self.apply_theme()
 
-    def toggle_voice_mode(self):
-        self.voice_mode_active = not self.voice_mode_active
-        if self.voice_mode_active:
-            self.voice_toggle_btn.setText("🛑 Stop Voice Mode")
-            self.voice_input()
-        else:
-            self.voice_toggle_btn.setText("🎤 Start Voice Mode")
+    def setup_shortcuts(self):
+        QShortcut(QKeySequence("Ctrl+G"), self, self.open_graph_plotter)
+        QShortcut(QKeySequence("Ctrl+U"), self, self.open_unit_converter)
+        QShortcut(QKeySequence("Ctrl+D"), self, self.toggle_theme)
 
-    def voice_input(self):
-        if not self.voice_mode_active:
+    def open_graph_plotter(self):
+        self.graph_view = GraphView()
+        self.graph_view.show()
+
+    def open_unit_converter(self):
+        self.unit_view = UnitConverterView()
+        self.unit_view.show()
+
+    def keyPressEvent(self, event):
+        key = event.key()
+        text = event.text()
+
+        allowed = "0123456789+-*/().^"
+        functions = {
+            's': 'math.sin(', 'c': 'math.cos(', 't': 'math.tan(',
+            'l': 'math.log10(', 'n': 'math.log(', 'e': 'math.e', 'p': 'math.pi'
+        }
+
+        if text in allowed:
+            self.expression += text
+        elif key == Qt.Key_Backspace:
+            self.expression = self.expression[:-1]
+        elif key in (Qt.Key_Enter, Qt.Key_Return):
+            safe_expr = self.format_expression(self.expression)
+            result = evaluate_expression(safe_expr)
+            self.result_label.setText(result)
+            if self.external_input:
+                self.external_input.setText(self.expression)
+        elif key == Qt.Key_Escape:
+            self.expression = ""
+        elif text.lower() in functions:
+            self.expression += functions[text.lower()]
+        else:
             return
 
-        recognizer = sr.Recognizer()
-        try:
-            with sr.Microphone() as source:
-                self.result_label.setText("Listening...")
-                audio = recognizer.listen(source, timeout=5)
-                command = recognizer.recognize_google(audio).lower()
-                self.result_label.setText("Recognized: " + command)
-
-                if "stop voice" in command:
-                    self.voice_mode_active = False
-                    self.voice_toggle_btn.setText("🎤 Start Voice Mode")
-                    return
-                elif "scientific" in command:
-                    self.toggle_scientific()
-                elif "graph" in command:
-                    self.graph_view = GraphView()
-                    self.graph_view.show()
-                elif "unit" in command:
-                    self.unit_view = UnitConverterView()
-                    self.unit_view.show()
-                elif "dark mode" in command:
-                    if not self.is_dark_mode:
-                        self.toggle_theme()
-                elif "light mode" in command:
-                    if self.is_dark_mode:
-                        self.toggle_theme()
-                else:
-                    self.expression = self.voice_to_expression(command)
-                    self.display.setText(self.expression)
-                    result = evaluate_expression(self.format_expression(self.expression))
-                    self.result_label.setText("Result: " + result)
-
-        except sr.UnknownValueError:
-            self.result_label.setText("Could not understand audio")
-        except sr.RequestError:
-            self.result_label.setText("Speech service unavailable")
-        except Exception as e:
-            self.result_label.setText(f"Error: {str(e)}")
-
-        if self.voice_mode_active:
-            QTimer.singleShot(1000, self.voice_input)
+        self.display.setText(self.expression)
+        self.validate_expression()
 
     def create_button(self, text, row, col, is_scientific=False):
         button = QPushButton(text)
@@ -195,6 +187,8 @@ class CalculatorWindow(QWidget):
             safe_expr = self.format_expression(self.expression)
             result = evaluate_expression(safe_expr)
             self.result_label.setText(result)
+            if self.external_input:
+                self.external_input.setText(self.expression)
         elif button_text == ')':
             if self.expression.count('(') > self.expression.count(')'):
                 self.expression += button_text
@@ -208,6 +202,10 @@ class CalculatorWindow(QWidget):
             self.expression += 'math.log('
         elif button_text == '!':
             self.expression += 'math.factorial('
+        elif button_text == 'π':
+            self.expression += 'math.pi'
+        elif button_text == 'e':
+            self.expression += 'math.e'
         elif button_text in ['sin', 'cos', 'tan']:
             self.expression += f"math.{button_text}("
         else:
@@ -219,14 +217,6 @@ class CalculatorWindow(QWidget):
         self.display.setText(self.expression)
         self.validate_expression()
 
-    def validate_expression(self):
-        try:
-            expr = self.format_expression(self.expression)
-            compile(expr, "<string>", "eval")
-            self.display.setStyleSheet("color: black; background-color: white;" if not self.is_dark_mode else "color: white; background-color: #222222;")
-        except:
-            self.display.setStyleSheet("color: red; background-color: #fff;" if not self.is_dark_mode else "color: red; background-color: #222;")
-
     def format_expression(self, expr):
         formatted = ""
         prev = ""
@@ -237,6 +227,14 @@ class CalculatorWindow(QWidget):
                 formatted += ch
             prev = ch
         return formatted.replace('×', '*').replace('÷', '/')
+
+    def validate_expression(self):
+        try:
+            expr = self.format_expression(self.expression)
+            compile(expr, "<string>", "eval")
+            self.display.setStyleSheet("color: black; background-color: white;" if not self.is_dark_mode else "color: white; background-color: #222222;")
+        except:
+            self.display.setStyleSheet("color: red; background-color: #fff;" if not self.is_dark_mode else "color: red; background-color: #222;")
 
     def toggle_theme(self):
         self.is_dark_mode = not self.is_dark_mode
@@ -270,3 +268,54 @@ class CalculatorWindow(QWidget):
             voice_text = voice_text.replace(word, symbol)
         return voice_text
 
+    def voice_input(self):
+        if not self.voice_mode_active:
+            return
+
+        recognizer = sr.Recognizer()
+        try:
+            with sr.Microphone() as source:
+                self.result_label.setText("Listening...")
+                audio = recognizer.listen(source, timeout=5)
+                command = recognizer.recognize_google(audio).lower()
+                self.result_label.setText("Recognized: " + command)
+
+                if "stop voice" in command:
+                    self.voice_mode_active = False
+                    self.voice_toggle_btn.setText("🎤 Start Voice Mode")
+                    return
+                elif "scientific" in command:
+                    self.toggle_scientific()
+                elif "graph" in command:
+                    self.open_graph_plotter()
+                elif "unit" in command:
+                    self.open_unit_converter()
+                elif "dark mode" in command:
+                    if not self.is_dark_mode:
+                        self.toggle_theme()
+                elif "light mode" in command:
+                    if self.is_dark_mode:
+                        self.toggle_theme()
+                else:
+                    self.expression = self.voice_to_expression(command)
+                    self.display.setText(self.expression)
+                    result = evaluate_expression(self.format_expression(self.expression))
+                    self.result_label.setText("Result: " + result)
+
+        except sr.UnknownValueError:
+            self.result_label.setText("Could not understand audio")
+        except sr.RequestError:
+            self.result_label.setText("Speech service unavailable")
+        except Exception as e:
+            self.result_label.setText(f"Error: {str(e)}")
+
+        if self.voice_mode_active:
+            QTimer.singleShot(1000, self.voice_input)
+
+    def toggle_voice_mode(self):
+        self.voice_mode_active = not self.voice_mode_active
+        if self.voice_mode_active:
+            self.voice_toggle_btn.setText("🛑 Stop Voice Mode")
+            self.voice_input()
+        else:
+            self.voice_toggle_btn.setText("🎤 Start Voice Mode")
